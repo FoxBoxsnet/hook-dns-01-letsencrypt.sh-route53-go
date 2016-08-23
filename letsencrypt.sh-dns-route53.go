@@ -1,3 +1,10 @@
+/*
+MIT License
+
+Copyright (c) 2016 FoxBoxsnet
+
+
+*/
 package main
 
 import (
