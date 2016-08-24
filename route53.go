@@ -42,30 +42,46 @@ var (
 )
 
 const (
+    sleeptime  = 10
     maxRetries = 5
     route53TTL = 10
 )
 
 func main() {
     colog.Register()
-    if len(os.Args) ==4 {
+    if len(os.Args) <= 4 {
+        log.Println("ERROR: parameter")
         log.Println("USAGE:https://github.com/FoxBoxsnet/letsencrypt.sh-dns-route53")
         log.Println("      $./letsencrypt.sh --cron --domain example.com --challenge dns-01 --hook ./letsencrypt.sh-dns-route53")
         os.Exit(1)
     }
 
         if "deploy_challenge" == os.Args[1] {
-            log.Println("INFO: deploy_challenge")
-            domain := Getdomain(os.Args[2])
+            log.Printf("INFO: deploy_challenge common_name: [%s]", os.Args[2])
+            common_name := os.Args[2]
+            domain := Getdomain(common_name)
             HostedZone := ListHostedZonesByName(domain)
             TXT_CHALLENGE := os.Args[4]
-            ChangeResourceRecordSets("UPSERT", domain, TXT_CHALLENGE, HostedZone, route53TTL)
+            ChangeResourceRecordSets("UPSERT", common_name, TXT_CHALLENGE, HostedZone, route53TTL)
         } else if "clean_challenge" == os.Args[1] {
-            log.Println("INFO: clean_challenge")
-            domain := Getdomain(os.Args[2])
+            log.Printf("INFO: clean_challenge common_name: [%s]", os.Args[2])
+            common_name := os.Args[2]
+            domain := Getdomain(common_name)
             HostedZone := ListHostedZonesByName(domain)
             TXT_CHALLENGE := os.Args[4]
-            ChangeResourceRecordSets("DELETE", domain, TXT_CHALLENGE, HostedZone, route53TTL)
+            ChangeResourceRecordSets("DELETE", common_name, TXT_CHALLENGE, HostedZone, route53TTL)
+        } else if "deploy_cert" == os.Args[1]{
+            log.Printf("INFO: deploy_cert common_name: [%s]", os.Args[2])
+            log.Printf("INFO: Private key       : %v", string(os.Args[3]))
+            log.Printf("INFO: Private cert      : %v", string(os.Args[4]))
+            log.Printf("INFO: Private fullchain : %v", string(os.Args[5]))
+            log.Printf("INFO: Private chain     : %v", string(os.Args[6]))
+            os.Exit(1)
+        } else {
+            log.Println("ERROR: parameter")
+            log.Println("USAGE:https://github.com/FoxBoxsnet/letsencrypt.sh-dns-route53")
+            log.Println("      $./letsencrypt.sh --cron --domain example.com --challenge dns-01 --hook ./letsencrypt.sh-dns-route53")
+            os.Exit(1)
         }
 }
 
@@ -81,7 +97,7 @@ func ListHostedZonesByName(domain string) string {
     sess, err := session.NewSession()
     if err != nil {
         log.Printf("ERORR: failed to create session,", err)
-        return ""
+        os.Exit(1)
     }
 
     svc := route53.New(sess)
@@ -92,12 +108,11 @@ func ListHostedZonesByName(domain string) string {
     resp, err := svc.ListHostedZonesByName(ListHZBN_params)
     if err != nil {
         log.Printf("ERORR: failed to ListHostedZonesByName,", err)
-        return ""
+        os.Exit(1)
     }
 
     var hostedZoneID string
     for _, hostedZone := range resp.HostedZones {
-        // .Name has a trailing dot
         if !*hostedZone.Config.PrivateZone && *hostedZone.Name == domain {
             hostedZoneID = *hostedZone.Id
             break
@@ -109,11 +124,11 @@ func ListHostedZonesByName(domain string) string {
 }
 
 func GetChange(GetChangeID string) {
-    log.Println("INFO: apply wait please wait for a while.")
+    log.Println("INFO: apply wait please wait for a while...")
     sess, err := session.NewSession()
     if err != nil {
-        log.Println("failed to create session,", err)
-        return
+        log.Printf("ERORR: failed to create session,", err)
+        os.Exit(1)
     }
     svc := route53.New(sess)
 
@@ -122,14 +137,11 @@ func GetChange(GetChangeID string) {
     }
 
     for i := 0; i < maxRetries; i++ {
-        time.Sleep(10 * time.Second)
+        time.Sleep(sleeptime * time.Second)
         resp, err := svc.GetChange(params)
-
         if err != nil {
-            // Print the error, cast err to awserr.Error to get the Code and
-            // Message from an error.
-            log.Println(err.Error())
-            return
+            log.Printf("ERORR: failed to create session,", err)
+            os.Exit(1)
         }
 
         if "INSYNC" == *resp.ChangeInfo.Status {
@@ -145,7 +157,7 @@ func ChangeResourceRecordSets (action ,domain , txt_challenge , HostedZones stri
     sess, err := session.NewSession()
     if err != nil {
         log.Printf("ERORR: failed to create session,", err)
-        //       return ""
+        os.Exit(1)
     }
     svc := route53.New(sess)
 
@@ -166,6 +178,7 @@ func ChangeResourceRecordSets (action ,domain , txt_challenge , HostedZones stri
     ResourceRecordResp, err := svc.ChangeResourceRecordSets(reqParams)
     if err != nil {
         log.Printf("ERORR: failed to create session,", err)
+        os.Exit(1)
     }
 
     var getChange string

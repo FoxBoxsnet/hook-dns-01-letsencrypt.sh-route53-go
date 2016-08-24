@@ -1,6 +1,6 @@
 # Amazon Route 53 hook for `letsencrypt.sh`
 
-This a hook for [letsencrypt.sh](https://github.com/lukas2511/letsencrypt.sh) (a [Let's Encrypt](https://letsencrypt.org/) ACME client) that allows you to use [Amazon Route 53](https://aws.amazon.com/jp/route53/) DNS records to respond to `dns-01` challenges. Requires Go and your Amazon Route 53 account AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY being in the environment.
+This a hook for [letsencrypt.sh](https://github.com/lukas2511/letsencrypt.sh) (a [Let's Encrypt](https://letsencrypt.org/) ACME client) that allows you to use [Amazon Route 53](https://aws.amazon.com/jp/route53/) DNS records to respond to `dns-01` challenges. Requires Go and your Amazon Route 53 account `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` being in the environment.
 
 ## Installation
 
@@ -8,13 +8,13 @@ This a hook for [letsencrypt.sh](https://github.com/lukas2511/letsencrypt.sh) (a
 $ git clone https://github.com/lukas2511/letsencrypt.sh
 $ cd letsencrypt.sh
 $ mkdir hooks
-$ go get github.com/FoxBoxsnet/letsencrypt.sh-dns-route53
-$ go build -ldflags "-s" letsencrypt.sh-dns-route53
+$ go get github.com/FoxBoxsnet/letsencrypt.sh-dns-route53 hook
+$ go build -ldflags "-s" hook/route53.go
 ```
 
 ## Configuration
 
-Your account's CloudFlare email and API key are expected to be in the environment, so make sure to:
+Your account's `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` are expected to be in the environment, so make sure to:
 
 ```
 $ export AWS_ACCESS_KEY_ID=ACCESS_KEYXXXXXXXXXX
@@ -24,54 +24,39 @@ $ export AWS_SECRET_ACCESS_KEY=SECRET_KEYXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 ## Usage
 
 ```
-$ ./letsencrypt.sh -c -d example.com -t dns-01 -k './route53'
-# INFO: Using main config file /etc/nginx/certs/example.com/config
-Processing example.com
- + Signing domains...
- + Creating new directory /etc/nginx/certs/example.com ...
- + Generating private key...
- + Generating signing request...
- + Requesting challenge for example.com...
-[  info ] 2016/08/23 14:19:53 INFO: Found ZONE : /hostedzone/XXXXXXXXXXXXXX Domain : example.com.
-[  info ] 2016/08/23 14:19:53 INFO: deploy_challenge
-[  info ] 2016/08/23 14:19:53 INFO: apply wait please wait for a while.
-[  info ] 2016/08/23 14:20:26 INFO; Record status : INSYNC
- + Responding to challenge for example.com...
-[  info ] 2016/08/23 14:20:27 INFO: Found ZONE : /hostedzone/XXXXXXXXXXXXXX Domain : example.com.
-[  info ] 2016/08/23 14:20:27 INFO: clean_challenge
-[  info ] 2016/08/23 14:20:28 INFO: apply wait please wait for a while.
-[  info ] 2016/08/23 14:21:00 INFO; Record status : INSYNC
- + Challenge is valid!
- + Requesting certificate...
- + Checking certificate...
- + Done!
- + Creating fullchain.pem...
-[  info ] 2016/08/23 14:21:03 INFO: Found ZONE : /hostedzone/XXXXXXXXXXXXXX Domain : example.com.
- + Done!
+$ ./usr/local/bin/letsencrypt.sh \
+    --cron \
+    --force \
+    --domain www.example.com \
+    --challenge dns-01 \
+    --hook hook/route53
 
-
-
-#
 # !! WARNING !! No main config file found, using default config!
-#
-Processing example.com
++ Generating account key...
++ Registering account key with letsencrypt...
+Processing www.example.com
  + Signing domains...
- + Creating new directory /home/user/letsencrypt.sh/certs/example.com ...
+ + Creating new directory /app/lets/certs/www.example.com ...
  + Generating private key...
  + Generating signing request...
- + Requesting challenge for example.com...
- + CloudFlare hook executing: deploy_challenge
- + DNS not propagated, waiting 30s...
- + DNS not propagated, waiting 30s...
- + Responding to challenge for example.com...
- + CloudFlare hook executing: clean_challenge
+ + Requesting challenge for www.example.com...
+[  info ] 2016/08/24 13:50:30 INFO: deploy_challenge common_name: [www.example.com]
+[  info ] 2016/08/24 13:50:31 INFO: Found ZONE : /hostedzone/Z32DGRNCTFM483 Domain : example.com.
+[  info ] 2016/08/24 13:50:31 INFO: apply wait please wait for a while...
+[  info ] 2016/08/24 13:51:04 INFO; Record status : INSYNC
+ + Responding to challenge for www.example.com...
+[  info ] 2016/08/24 13:51:06 INFO: clean_challenge common_name: [www.example.com]
+[  info ] 2016/08/24 13:51:06 INFO: Found ZONE : /hostedzone/Z32DGRNCTFM483 Domain : example.com.
+[  info ] 2016/08/24 13:51:07 INFO: apply wait please wait for a while...
+[  info ] 2016/08/24 13:51:39 INFO; Record status : INSYNC
  + Challenge is valid!
  + Requesting certificate...
  + Checking certificate...
  + Done!
  + Creating fullchain.pem...
- + CloudFlare hook executing: deploy_cert
- + ssl_certificate: /home/user/letsencrypt.sh/certs/example.com/fullchain.pem
- + ssl_certificate_key: /home/user/letsencrypt.sh/certs/example.com/privkey.pem
- + Done!
+[  info ] 2016/08/24 13:51:40 INFO: deploy_cert common_name: [www.example.com]
+[  info ] 2016/08/24 13:51:40 INFO: Private key       : /app/lets/certs/www.example.com/privkey.pem
+[  info ] 2016/08/24 13:51:40 INFO: Private cert      : /app/lets/certs/www.example.com/cert.pem
+[  info ] 2016/08/24 13:51:40 INFO: Private fullchain : /app/lets/certs/www.example.com/fullchain.pem
+[  info ] 2016/08/24 13:51:40 INFO: Private chain     : /app/lets/certs/www.example.com/chain.pem
 ```
