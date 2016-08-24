@@ -60,3 +60,5 @@ Processing www.example.com
 [  info ] 2016/08/24 13:51:40 INFO: Private fullchain : /app/lets/certs/www.example.com/fullchain.pem
 [  info ] 2016/08/24 13:51:40 INFO: Private chain     : /app/lets/certs/www.example.com/chain.pem
 ```
+# Special thanks
+The [kappataumu/letsencrypt-cloudflare-hook](https://github.com/kappataumu/letsencrypt-cloudflare-hook) was written as a reference.
