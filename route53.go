@@ -3,7 +3,23 @@ MIT License
 
 Copyright (c) 2016 FoxBoxsnet
 
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 */
 package main
 
@@ -30,25 +46,28 @@ const (
     route53TTL = 10
 )
 
-
 func main() {
     colog.Register()
-    
-    domain          := Getdomain(os.Args[2])
-    HostedZone      := ListHostedZonesByName(domain)
-    TXT_CHALLENGE   := os.Args[4]
-
-    if "deploy_challenge" == os.Args[1] {
-        log.Println("INFO: deploy_challenge")
-        ChangeResourceRecordSets("UPSERT",domain,TXT_CHALLENGE,HostedZone,route53TTL)
-
-    }else if "clean_challenge" == os.Args[1] {
-        log.Println("INFO: clean_challenge")
-        ChangeResourceRecordSets("DELETE",domain,TXT_CHALLENGE,HostedZone,route53TTL)
-
+    if len(os.Args) ==4 {
+        log.Println("USAGE:https://github.com/FoxBoxsnet/letsencrypt.sh-dns-route53")
+        log.Println("      $./letsencrypt.sh --cron --domain example.com --challenge dns-01 --hook ./letsencrypt.sh-dns-route53")
+        os.Exit(1)
     }
-}
 
+        if "deploy_challenge" == os.Args[1] {
+            log.Println("INFO: deploy_challenge")
+            domain := Getdomain(os.Args[2])
+            HostedZone := ListHostedZonesByName(domain)
+            TXT_CHALLENGE := os.Args[4]
+            ChangeResourceRecordSets("UPSERT", domain, TXT_CHALLENGE, HostedZone, route53TTL)
+        } else if "clean_challenge" == os.Args[1] {
+            log.Println("INFO: clean_challenge")
+            domain := Getdomain(os.Args[2])
+            HostedZone := ListHostedZonesByName(domain)
+            TXT_CHALLENGE := os.Args[4]
+            ChangeResourceRecordSets("DELETE", domain, TXT_CHALLENGE, HostedZone, route53TTL)
+        }
+}
 
 func Getdomain(fqdn string)  string  {
     var domain_tmp1 = []string{}
@@ -57,7 +76,6 @@ func Getdomain(fqdn string)  string  {
     domain       := string(strings.Join(domain_tmp2 , ".") + ".")
     return domain
 }
-
 
 func ListHostedZonesByName(domain string) string {
     sess, err := session.NewSession()
@@ -130,7 +148,6 @@ func ChangeResourceRecordSets (action ,domain , txt_challenge , HostedZones stri
         //       return ""
     }
     svc := route53.New(sess)
-
 
     recordSet := ResourceRecordSet(domain, txt_challenge , ttl)
     reqParams := &route53.ChangeResourceRecordSetsInput{
