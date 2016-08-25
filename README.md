@@ -7,9 +7,7 @@ This a hook for [letsencrypt.sh](https://github.com/lukas2511/letsencrypt.sh) (a
 ```
 $ git clone https://github.com/lukas2511/letsencrypt.sh
 $ cd letsencrypt.sh
-$ mkdir hooks
-$ go get github.com/FoxBoxsnet/letsencrypt.sh-dns-route53 hook
-$ go build -ldflags "-s" hook/route53.go
+go get github.com/FoxBoxsnet/letsencrypt.sh-dns-route53
 ```
 
 ## Configuration
@@ -29,7 +27,7 @@ $ ./usr/local/bin/letsencrypt.sh \
     --force \
     --domain www.example.com \
     --challenge dns-01 \
-    --hook hook/route53
+    --hook hook/letsencrypt.sh-dns-route53
 
 # !! WARNING !! No main config file found, using default config!
 + Generating account key...
