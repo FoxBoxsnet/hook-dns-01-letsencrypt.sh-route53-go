@@ -63,6 +63,7 @@ func main() {
             HostedZone := ListHostedZonesByName(domain)
             TXT_CHALLENGE := os.Args[4]
             ChangeResourceRecordSets("UPSERT", common_name, TXT_CHALLENGE, HostedZone, route53TTL)
+            os.Exit(0)
         } else if "clean_challenge" == os.Args[1] {
             log.Printf("INFO: clean_challenge common_name: [%s]", os.Args[2])
             common_name := os.Args[2]
@@ -70,13 +71,17 @@ func main() {
             HostedZone := ListHostedZonesByName(domain)
             TXT_CHALLENGE := os.Args[4]
             ChangeResourceRecordSets("DELETE", common_name, TXT_CHALLENGE, HostedZone, route53TTL)
-        } else if "deploy_cert" == os.Args[1]{
+            os.Exit(0)
+        } else if "deploy_cert" == os.Args[1] {
             log.Printf("INFO: deploy_cert common_name: [%s]", os.Args[2])
             log.Printf("INFO: Private key       : %v", string(os.Args[3]))
             log.Printf("INFO: Private cert      : %v", string(os.Args[4]))
             log.Printf("INFO: Private fullchain : %v", string(os.Args[5]))
             log.Printf("INFO: Private chain     : %v", string(os.Args[6]))
-            os.Exit(1)
+            os.Exit(0)
+        } else if "unchanged_cert" == os.Args[1] {
+            log.Printf("INFO: unchanged cert common_name: [%s]", os.Args[2])
+            os.Exit(0)
         } else {
             log.Println("ERROR: parameter")
             log.Println("USAGE:https://github.com/FoxBoxsnet/letsencrypt.sh-dns-route53")
