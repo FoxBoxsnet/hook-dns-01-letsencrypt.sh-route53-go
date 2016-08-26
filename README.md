@@ -58,5 +58,11 @@ Processing www.example.com
 [  info ] 2016/08/24 13:51:40 INFO: Private fullchain : /app/lets/certs/www.example.com/fullchain.pem
 [  info ] 2016/08/24 13:51:40 INFO: Private chain     : /app/lets/certs/www.example.com/chain.pem
 ```
+# Use SDK & package
+| Package | License |
+|:--------|:--------|
+|[aws/aws-sdk-go](https://github.com/aws/aws-sdk-go) | [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg?maxAge=2592000)](https://github.com/aws/aws-sdk-go/blob/master/LICENSE.txt) |
+| [comail/colog](https://github.com/comail/colog) | [![Packagist](https://img.shields.io/packagist/l/doctrine/orm.svg?maxAge=2592000)](https://github.com/comail/colog/blob/master/LICENSE) |
+
 # Special thanks
 The [kappataumu/letsencrypt-cloudflare-hook](https://github.com/kappataumu/letsencrypt-cloudflare-hook) was written as a reference.
