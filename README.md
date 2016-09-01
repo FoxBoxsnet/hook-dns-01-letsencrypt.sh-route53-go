@@ -64,5 +64,13 @@ Processing www.example.com
 |[aws/aws-sdk-go](https://github.com/aws/aws-sdk-go) | [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg?maxAge=2592000)](https://github.com/aws/aws-sdk-go/blob/master/LICENSE.txt) |
 | [comail/colog](https://github.com/comail/colog) | [![Packagist](https://img.shields.io/packagist/l/doctrine/orm.svg?maxAge=2592000)](https://github.com/comail/colog/blob/master/LICENSE) |
 
+# golang build
+```
+docker build --no-cache foxboxsnet/golang .
+docker run --rm \
+    -e GITHUB_TOKEN=XXXXXXXXXXXXXXXXXXXXXXXXXx \
+    foxboxsnet/golang
+```
+
 # Special thanks
 The [kappataumu/letsencrypt-cloudflare-hook](https://github.com/kappataumu/letsencrypt-cloudflare-hook) was written as a reference.
