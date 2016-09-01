@@ -7,5 +7,5 @@ RUN apk add --no-cache git
 COPY build-golang.sh /go
 
 WORKDIR /go
-ENTRYPOINT [ "/build-golang.sh" ]
+ENTRYPOINT [ "/go/build-golang.sh" ]
 CMD ["exit"]
