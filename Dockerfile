@@ -4,6 +4,8 @@ MAINTAINER FoxBoxsnet
 
 RUN apk add --no-cache git
 
-COPY build-golang.sh /
+COPY build-golang.sh /go
+
+WORKDIR /go
 ENTRYPOINT [ "/build-golang.sh" ]
 CMD ["exit"]
